@@ -7,7 +7,6 @@
 
 ## Getting Started
 
-### Prerequisites
 
 # kubernetes local cluster with Vagrant
 Create a Kubernetes Cluster with Vagrant and VirtualBox
