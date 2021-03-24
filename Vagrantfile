@@ -14,7 +14,7 @@ Vagrant.configure(2) do |config|
     master.vm.network "private_network", ip: "172.10.10.100"
     master.vm.provider "virtualbox" do |vb|
       vb.name = "master"
-      vb.memory = "1024"
+      vb.memory = "4096"
       vb.cpus = "4"
       vb.customize ["modifyvm", :id, "--groups", "/kubernetes"]
     end
@@ -31,7 +31,7 @@ Vagrant.configure(2) do |config|
       node.vm.network "private_network", ip: "172.10.10.10#{i}"
       node.vm.provider "virtualbox" do |vb|
         vb.name = "node#{i}"
-        vb.memory = "1024"
+        vb.memory = "4096"
         vb.cpus = "4"
         vb.customize ["modifyvm", :id, "--groups", "/kubernetes"]
       end
