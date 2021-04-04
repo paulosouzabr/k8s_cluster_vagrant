@@ -3,7 +3,7 @@
 IP_MASTER="172.10.10.100"
 IP_NODE_1="172.10.10.101"
 IP_NODE_2="172.10.10.102"
-ROOT_PASS="%linux05%"
+ROOT_PASS="change_me"
 
 
 function install_docker(){

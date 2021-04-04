@@ -28,9 +28,7 @@ function restore_config_file(){
 
 function check_so_version(){
     CHECK_UBUNTU=$(sudo grep -i -r "ID_LIKE" /etc/* |grep -i ID_LIKE|cut -d "=" -f2|sed 's/"//g' | awk 'NR==1{print $1}')
-    VERSION="ubuntu"
-   
-    if [ "$VERSION" == "$CHECK_UBUNTU" ];
+    if [ -f "/etc/debian_version" ];
     then 
         echo ""
         echo "------------------------------------"
@@ -47,6 +45,7 @@ function check_so_version(){
         exit 
     fi 
 }
+
 
 function check_virtualbox_install(){
     VIRTUALBOX_PATH="/usr/bin/virtualbox"
