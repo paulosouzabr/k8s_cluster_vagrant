@@ -28,9 +28,7 @@ function restore_config_file(){
 
 function check_so_version(){
     CHECK_UBUNTU=$(sudo grep -i -r "ID_LIKE" /etc/* |grep -i ID_LIKE|cut -d "=" -f2|sed 's/"//g' | awk 'NR==1{print $1}')
-    VERSION="ubuntu"
-   
-    if [ "$VERSION" == "$CHECK_UBUNTU" ];
+    if [ -f "/etc/debian_version" ];
     then 
         echo ""
         echo "------------------------------------"
@@ -47,6 +45,7 @@ function check_so_version(){
         exit 
     fi 
 }
+
 
 function check_virtualbox_install(){
     VIRTUALBOX_PATH="/usr/bin/virtualbox"
@@ -230,11 +229,9 @@ function start_cluster(){
     echo ""
     vagrant up
     echo "---------------------------------"
-    echo "CLUSTER ON LINE \0/ HAVE A FUN!!!"
+    echo "CLUSTER ON LINE! \0/ HAVE A FUN!!!"
     echo "---------------------------------"
     echo ""
-    kubectl proxy
-
 }
 
 function after_install(){
@@ -245,6 +242,7 @@ function after_install(){
     echo "Now, we starting the config for access the cluster with kubctl"
     echo "--------------------------------------------------------------"
     echo ""
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
     cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
@@ -262,7 +260,7 @@ EOF
     echo "Your machine is configured and connected on cluter lab"
     echo "------------------------------------------------------"
     echo ""
-    #kubectl get svc,deployment,pods --all-namespaces
+    kubectl get svc,deployment,pods --all-namespaces
 }
 
 function k8s_dashboard(){
@@ -315,6 +313,7 @@ EOF
 }
 
 function start(){
+    clear
     welcome;
     validate_pre-req;
     echo ""
@@ -356,10 +355,11 @@ function start(){
         2)
         echo ""
         echo "--------------------------"
-        echo "Nice, cluster k8s starting"
+        echo "OK, cluster k8s starting"
         echo "--------------------------"
         echo ""
         start_cluster;
+        k8s_dashboard;
         ;;
         *)
         echo ""

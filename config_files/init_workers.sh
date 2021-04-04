@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT_PASS="pato@2099"
+ROOT_PASS="change_me"
 
 function join_workers(){
 echo ""

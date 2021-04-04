@@ -125,12 +125,12 @@ function update_hosts_file(){
   echo "--------------------------------"
   echo ""
 
-  sudo bash 'cat >> /etc/hosts <<EOF   
+  sudo bash -c "cat >> /etc/hosts" << EOF   
 ### VAGRANT K8S HOSTS #### 
 ${IP_MASTER} master.lab.tech master
 ${IP_NODE_1} node-1.lab.tech node-1
 ${IP_NODE_2} node-2.lab.tech node-2 
-EOF'
+EOF
   hostname --fqdn
   cat /etc/hostname
   cat /etc/hosts
