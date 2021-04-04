@@ -253,7 +253,7 @@ EOF
     mv "$HOME"/.kube/config "$HOME"/.kube/bkp_config
     echo "$ROOT_PASS"
     sleep 10
-    sshpass -p "$ROOT_PASS" ssh -v -o StrictHostKeyChecking=no root@172.10.10.100 "cat /home/vagrant/.kube/config" |tee -a > "$HOME"/.kube/config
+    sshpass -p "$ROOT_PASS" ssh -o StrictHostKeyChecking=no root@172.10.10.100 "cat /home/vagrant/.kube/config" |tee -a > "$HOME"/.kube/config
 
     echo ""
     echo "------------------------------------------------------"
