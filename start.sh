@@ -54,9 +54,9 @@ function check_virtualbox_install(){
     if [ "$VIRTUALBOX_PATH" == "$VB_CHECK_PATH" ];
     then
         echo ""
-        echo "--------------------------------------------------"
-        echo "Nice, you have the VirtualBox instaled, go to next" 
-        echo "--------------------------------------------------"
+        echo "---------------------------------------------------------------"
+        echo "Nice, you have the Vagrant installed, let's go to the next step" 
+        echo "---------------------------------------------------------------"
         echo "" 
     else
         echo "-------------------------------------------------------------"
@@ -64,7 +64,7 @@ function check_virtualbox_install(){
         echo "-------------------------------------------------------------" 
         echo ""
         echo "-------------------------------"
-        echo "1 - Ok, go ahead."
+        echo "1 - Ok, let's go ahead."
         echo "2 - No, Better in another time."
         echo "-------------------------------"
         echo ""
@@ -89,9 +89,9 @@ function check_virtualbox_install(){
             ;;
             *)
             echo ""
-            echo "----------------------------------"
-            echo "Ops! Something is wrong, try again"
-            echo "----------------------------------"
+            echo "-----------------------------------"
+            echo "Oops! Something is wrong, try again"
+            echo "-----------------------------------"
             echo ""
             exit
             ;;
@@ -106,9 +106,9 @@ function check_vagrant_install(){
     if [ "$VAGRANT_PATH" == "$VAGRANT_CHECK_PATH"  ];
     then
         echo ""
-        echo "-----------------------------------------------"
-        echo "Nice, you have the Vagrant instaled, go to next" 
-        echo "-----------------------------------------------"
+        echo "---------------------------------------------------------------"
+        echo "Nice, you have the Vagrant installed, let's go to the next step" 
+        echo "---------------------------------------------------------------"
         echo ""  
     else
         echo "----------------------------------------------------------"
@@ -116,8 +116,8 @@ function check_vagrant_install(){
         echo "----------------------------------------------------------" 
         echo ""
         echo "-------------------------------"
-        echo "1 - Ok, go ahead."
-        echo "2 - No, Better in another time."
+        echo "1 - Ok, let's go ahead."
+        echo "2 - No, better in another time."
         echo "-------------------------------"
         echo ""
         read -r INPUT_STRING;
@@ -144,9 +144,9 @@ function check_vagrant_install(){
             ;;
             *)
             echo ""
-            echo "----------------------------------"
-            echo "Ops! Something is wrong, try again"
-            echo "----------------------------------"
+            echo "-----------------------------------"
+            echo "Oops! Something is wrong, try again"
+            echo "-----------------------------------"
             echo ""
             exit
             ;;
@@ -242,7 +242,7 @@ function after_install(){
     echo "Now, we starting the config for access the cluster with kubctl"
     echo "--------------------------------------------------------------"
     echo ""
-    sudo apt-get update 
+    sudo apt-get update
     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
     cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
@@ -261,18 +261,19 @@ EOF
     echo "------------------------------------------------------"
     echo ""
     kubectl get svc,deployment,pods --all-namespaces
+    sleep 5
 }
 
 function k8s_dashboard(){
     echo ""
     echo "-----------------------------------------"
-    echo "Now, we install the dash board for cluster"
+    echo "Now, we install the dashboard for cluster"
     echo "-----------------------------------------"
     echo ""
     kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.1.0/aio/deploy/recommended.yaml
     
     echo "-----------------------------------------"
-    echo "Generating token for dash board          "
+    echo "Generating token for dashboard          "
     echo "-----------------------------------------"
     echo ""
     cat <<EOF | kubectl apply -f -
@@ -298,7 +299,7 @@ subjects:
 EOF
     TOKEN=$(kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}")
     echo "---------------------------------------------"
-    echo "Your token for access de dash board:         "
+    echo "Your token for access de dashboard:         "
     echo "---------------------------------------------"
     echo "$TOKEN                                       "
     echo "---------------------------------------------"
@@ -319,7 +320,7 @@ function start(){
     echo ""
     echo "-------------------------------------------------------"
     echo "Welcome, this the first menu for help you to configure "
-    echo "your lab, for that we need some information            "
+    echo "your lab, for that we need some information.           "
     echo "-------------------------------------------------------"
     echo ""
     sleep 2
@@ -363,9 +364,9 @@ function start(){
         ;;
         *)
         echo ""
-        echo "---------------------------------"
-        echo "Ops, something is wrong try again"
-        echo "---------------------------------"
+        echo "----------------------------------"
+        echo "Oops, something is wrong try again"
+        echo "----------------------------------"
         echo ""
         exit
         ;;
