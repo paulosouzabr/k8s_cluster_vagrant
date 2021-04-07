@@ -22,7 +22,7 @@ function lab_test(){
 }
 
 function restore_config_file(){
-    cp ./docs/bkp_files/vagrant_backup_tmp ./config_files/Vagrantfile 
+    cp ./docs/bkp_files/vagrant_backup_tmp ./Vagrantfile 
     cp ./docs/bkp_files/*.sh ./config_files/ 
 } 
 
