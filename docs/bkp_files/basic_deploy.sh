@@ -93,7 +93,7 @@ EOF'
   echo "[TASK 06] Install Kubernetes kubeadm, kubelet and kubectl"
   echo "---------------------------------------------------------"
   echo ""
-  sudo apt-get install -yq kubelet kubeadm kubectl
+  sudo apt update && sudo apt-get install -yq kubelet kubeadm kubectl
 
   echo ""
   echo "------------------------------------------"
