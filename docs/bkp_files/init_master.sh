@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IP_MASTER="172.10.10.100"
-NETWORK_CID="192.168.0.0/16"
+IP_MASTER="10.50.50.100"
+NETWORK_CID="10.50.50.0/24"
 
 function initialize_kubernetes(){
 echo ""
@@ -9,6 +9,7 @@ echo "--------------------------------------"
 echo "[TASK 1] Initialize Kubernetes Cluster"
 echo "--------------------------------------"
 echo ""
+kubeadm config images pull
 kubeadm init --apiserver-advertise-address=${IP_MASTER} --pod-network-cidr=${NETWORK_CID} |tee -a >> /root/kubeinit.log 
 }
 
@@ -26,12 +27,14 @@ cat /etc/kubernetes/admin.conf
 
 function deploy_plugin_network(){
 echo ""
-echo "------------------------------"
-echo "[TASK 3] Deploy Calico network"
-echo "------------------------------"
+echo "---------------------------------"
+echo "[TASK 3] Deploy Weave-net network"
+echo "---------------------------------"
 echo ""
-su - vagrant -c "kubectl create -f https://docs.projectcalico.org/latest/manifests/calico.yaml"
+#su - vagrant -c "kubectl create -f https://docs.projectcalico.org/latest/manifests/calico.yaml"
+su - vagrant -c "kubectl apply -f \"https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')\""
 }
+
 
 function cluster_join(){
 echo ""

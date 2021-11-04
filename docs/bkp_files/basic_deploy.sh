@@ -1,8 +1,8 @@
 #!/bin/bash
 
-IP_MASTER="172.10.10.100"
-IP_NODE_1="172.10.10.101"
-IP_NODE_2="172.10.10.102"
+IP_MASTER="10.50.50.100"
+IP_NODE_1="10.50.50.101"
+IP_NODE_2="10.50.50.102"
 ROOT_PASS="change_me"
 
 
@@ -45,10 +45,19 @@ function enable_docker_service(){
 
 function add_sysctl_settings(){
   echo ""
-  echo "-----------------------------"
-  echo "[TASK 03] Add sysctl settings"
-  echo "-----------------------------"
+  echo "----------------------------------------------"
+  echo "[TASK 03] Load modules and Add sysctl settings"
+  echo "----------------------------------------------"
   echo ""
+
+  sudo bash -c 'cat >> /etc/modules-load.d/k8s.conf <<EOF
+  br_netfilter
+  ip_vs
+  ip_vs_rr
+  ip_vs_sh
+  ip_vs_wrr
+  nf_conntrack_ipv4
+EOF'
 
   sudo bash -c 'cat >> /etc/sysctl.d/kubernetes.conf <<EOF
   net.bridge.bridge-nf-call-ip6tables = 1
@@ -68,18 +77,15 @@ function disable_swap(){
   sudo swapoff -a
 }
 
-function install_deb_pkgs(){
+function add_k8s_repo(){
   echo ""
-  echo "--------------------------------------------"
-  echo "[TASK 05] Installing apt-transport-https pkg"
-  echo "--------------------------------------------"
+  echo "--------------------------------"
+  echo "[TASK 05] Adding Kubernetes Repo"
+  echo "--------------------------------"
   echo ""
 
-  sudo apt-get update && sudo apt-get install -y apt-transport-https curl
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-}
 
-function install_kubernetes(){ 
   sudo bash -c 'cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
   deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF'
@@ -87,7 +93,9 @@ EOF'
   sudo ls -ltr /etc/apt/sources.list.d/kubernetes.list
 
   sudo apt-get update -yq
+}
 
+function install_kubernetes(){ 
   echo ""
   echo "---------------------------------------------------------"
   echo "[TASK 06] Install Kubernetes kubeadm, kubelet and kubectl"
@@ -153,7 +161,7 @@ install_docker;
 enable_docker_service;
 add_sysctl_settings;
 disable_swap;
-install_deb_pkgs;
+add_k8s_repo;
 install_kubernetes;
 ssh_change_config;
 update_hosts_file;

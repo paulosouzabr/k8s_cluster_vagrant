@@ -46,7 +46,6 @@ function check_so_version(){
     fi 
 }
 
-
 function check_virtualbox_install(){
     VIRTUALBOX_PATH="/usr/bin/virtualbox"
     VB_CHECK_PATH=$(whereis virtualbox |awk '{print $2}')
@@ -202,15 +201,30 @@ function welcome(){
 
 function set_root_passwd(){
     echo ""
-    echo "-------------------------------------------"
-    echo "Please type the password for root account: "
-    echo "-------------------------------------------"
+    echo "-----------------------------------------------"
+    echo "Please type the password for VMs root account: "
+    echo "-----------------------------------------------"
     echo ""
     read -r ROOT_PASS;
     sed -i "s/change_me/${ROOT_PASS}/g" ./config_files/basic_deploy.sh
     sed -i "s/change_me/${ROOT_PASS}/g" ./config_files/init_workers.sh
     clear
 }
+
+function set_ip_network(){
+    echo ""
+    echo "----------------------------------------------------"
+    echo "Please type the IP of network VMs (ex: 10.50.50.0): "
+    echo "----------------------------------------------------"
+    echo ""
+    read -r IP_NETWORK;
+    sed -i "s/change_me/${IP_NETWORK}/g" ./config_files/basic_deploy.sh
+    sed -i "s/change_me/${IP_NETWORK}/g" ./config_files/init_workers.sh
+    sed -i "s/change_me/${IP_NETWORK}/g" ./config_files/basic_deploy.sh
+    sed -i "s/change_me/${IP_NETWORK}/g" ./config_files/Vagrantfile
+    clear
+}
+
 
 function start_vagrant(){
     echo ""
@@ -232,37 +246,6 @@ function start_cluster(){
     echo "CLUSTER ON LINE! \0/ HAVE A FUN!!!"
     echo "---------------------------------"
     echo ""
-}
-
-function after_install(){
-    ROOT_PASS=$(cat ./config_files/init_workers.sh|grep ROOT_PASS |awk 'NR==1{print $1}' |cut -d "=" -f2|sed -e 's/^"//' -e 's/"$//')
-    echo ""
-    echo "--------------------------------------------------------------"
-    echo "Ohh very nice, your cluster is on line"
-    echo "Now, we starting the config for access the cluster with kubctl"
-    echo "--------------------------------------------------------------"
-    echo ""
-    sudo apt-get update
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-    cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-    sudo apt update
-    sudo apt-get install -y kubelet kubeadm kubectl sshpass
-    sudo apt-mark hold kubelet kubeadm kubectl
-    ssh-keygen -f "/home/ph/.ssh/known_hosts" -R "172.10.10.100"
-    mv "$HOME"/.kube/config "$HOME"/.kube/bkp_config
-    echo "$ROOT_PASS"
-    sleep 10
-    sshpass -p "$ROOT_PASS" ssh -o StrictHostKeyChecking=no root@172.10.10.100 "cat /home/vagrant/.kube/config" |tee -a > "$HOME"/.kube/config
-
-    echo ""
-    echo "------------------------------------------------------"
-    echo "Your machine is configured and connected on cluter lab"
-    echo "------------------------------------------------------"
-    echo ""
-    kubectl get svc,deployment,pods --all-namespaces
-    sleep 5
 }
 
 function k8s_dashboard(){
@@ -314,6 +297,84 @@ EOF
 
 }
 
+
+function after_install(){
+    ROOT_PASS=$(cat ./config_files/init_workers.sh|grep ROOT_PASS |awk 'NR==1{print $1}' |cut -d "=" -f2|sed -e 's/^"//' -e 's/"$//')
+    IP_MASTER="10.50.50.100"
+    clear
+    echo ""
+    echo "--------------------------------------------------------------"
+    echo "Ohh very nice, your cluster is on line"
+    echo "Now, we starting the config for access the cluster with kubctl"
+    echo "--------------------------------------------------------------"
+    echo ""
+    echo "----------------------------------------------------------------"
+    echo "----------------------------------------------------------------"
+    echo ""
+    echo "Do you want to install kubeadm, kubelet and kubectl "
+    echo "and configure the $HOME/.kube/config file on localhost?"
+    echo ""
+    echo "-----------------------------------------------------------------"
+    echo "Please, type an option"
+    echo ""    
+    echo "1 - Yes."
+    echo "2 - No."
+    echo "------------------------------"
+    echo ""
+    read -r INPUT_STRING_1;
+        case $INPUT_STRING_1 in
+        1)
+        echo ""
+        echo "-----------------"
+        echo "OK!!Let's start"
+        echo "-----------------"
+        echo ""
+        sudo apt update
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        su - root -c "echo \"deb http://apt.kubernetes.io/ kubernetes-xenial main\" > /etc/apt/sources.list.d/kubernetes.list"
+        sudo apt update
+        sudo apt install -y kubelet kubeadm kubectl sshpass
+        ssh-keygen -f "/home/ph/.ssh/known_hosts" -R "$IP_MASTER"
+        mv "$HOME"/.kube/config "$HOME"/.kube/bkp_config
+        echo "$ROOT_PASS"
+        sleep 10
+        sshpass -p "$ROOT_PASS" ssh -o StrictHostKeyChecking=no root@$IP_MASTER "cat /home/vagrant/.kube/config" |tee -a > "$HOME"/.kube/config
+        echo ""
+        echo "------------------------------------------------------"
+        echo "Your machine is configured and connected on cluter lab"
+        echo "------------------------------------------------------"
+        echo ""
+        kubectl get svc,deployment,pods --all-namespaces
+        sleep 5
+        k8s_dashboard;
+        echo "---------------------------------------------------------------------"
+        echo "If you want Turn off your cluster, press CRTL+C and type vagrant halt"
+        echo "---------------------------------------------------------------------"
+        echo ""
+        echo "--------------------------------------------------------------------"
+        echo "If you want destroy the cluster and all VMs, type vagrant destroy -f"
+        echo "--------------------------------------------------------------------"
+        ;;
+        2)
+        echo ""
+        echo "-------------------------------"
+        echo "OK, your cluster k8s is running"
+        echo "-------------------------------"
+        echo ""
+        exit
+        ;;
+        *)
+        echo ""
+        echo "----------------------------------"
+        echo "Oops, something is wrong try again"
+        echo "----------------------------------"
+        echo ""
+        exit
+        ;;
+        esac 
+}
+
+
 function start(){
     clear
     welcome;
@@ -352,7 +413,6 @@ function start(){
         set_root_passwd;
         start_vagrant;
         after_install;
-        k8s_dashboard;
         ;;
         2)
         echo ""

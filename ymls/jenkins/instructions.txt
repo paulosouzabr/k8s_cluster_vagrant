@@ -1,0 +1,14 @@
+kubectl create namespace devops-tools && \
+kubectl apply -f 1-serviceAccount.yaml && \
+kubectl apply -f 2-volume.yaml && \
+kubectl apply -f 3-deployment.yaml && \
+kubectl get deployments -n devops-tools && \
+kubectl apply -f 4-service.yaml && \
+kubectl get svc -n devops-tools && \
+kubectl get pods -n devops-tools
+#kubectl logs jenkins-deployment-2539456353-j00w5 --namespace=jenkins
+## kubectl exec -it jenkins-559d8cd85c-6th8r cat  /var/jenkins_home/secrets/initialAdminPassword -n devops-tools
+
+
+
+
